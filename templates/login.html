@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="login-container">
+	<h1>Log In</h1>
+
+	<!-- Error message display -->
+	{% if login_error %}
+	<div class="error-message">{{ login_error }}</div>
+	{% endif %}
+
+	<form action="/login" method="POST">
+		<input placeholder="Email"
+			   autocomplete="off"
+			   type="email"
+			   name="email"
+			   required>
+		<input placeholder="Password"
+			   autocomplete="off"
+			   type="password"
+			   name="password"
+			   required>
+		<button type="submit">Log In</button>
+	</form>
+
+	<!-- Signup link -->
+	<p class="signup-link"> No account? <a href="/signup">Sign up here</a></p>
+</div>
+{% endblock %}
+

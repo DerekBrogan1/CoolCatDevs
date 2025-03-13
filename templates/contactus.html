@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+<div class="contact-container">
+    <h1>Contact Us</h1>
+    <form id="contact-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" rows="4" required></textarea>
+
+        <button type="submit">Send Message</button>
+    </form>
+    <p id="confirmation-message" style="display: none; color: green; font-weight: bold; margin-top: 10px;">Feedback has been submitted, Thank You.</p>
+</div>
+
+<script>
+    document.getElementById('contact-form').addEventListener('submit', function (event) {
+        event.preventDefault(); 
+        document.getElementById('confirmation-message').style.display = 'block'; // Show confirmation message
+        this.reset();
+    });
+</script>
+{% endblock %}
+

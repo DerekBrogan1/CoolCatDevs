@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block title %}Merchandise Catalog{% endblock %}
+
+{% block content %}
+<h1>Merchandise Catalog</h1>
+<p>Explore our unique selection of products below!</p>
+<div class="product-grid" id="product_grid"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+	const product_grid = document.getElementById("product_grid");
+	const products_json = JSON.parse(`{{ products | tojson | safe }}`);
+
+	products_json.forEach(product => {
+		const frm_card = document.createElement("div");
+		frm_card.className = "product-card";
+		
+		const img_variant = document.createElement("img");
+		img_variant.src = product.variants[0].image;
+
+		const lbl_name = document.createElement("h3");
+		lbl_name.textContent = product.name;
+
+		const lbl_price = document.createElement("p");
+		lbl_price.textContent = `$${product.variants[0].price.toFixed(2)}`;
+
+		const lbl_variant = document.createElement("p");
+		lbl_variant.textContent = "Select Color:";
+
+		const rdo_variants = document.createElement("select");
+		rdo_variants.style.width = "auto";
+		rdo_variants.style.border = "solid";
+		rdo_variants.style.borderColor = "#27ae60";
+
+		product.variants.forEach(variant => {
+			const option = document.createElement("option");
+			option.value = variant.id;
+			option.textContent = variant.name;
+			rdo_variants.appendChild(option);
+		});
+
+		const btn_purchase = document.createElement("button");
+		btn_purchase.className = "add-to-cart";
+		btn_purchase.textContent = "Add to Cart";
+
+		frm_card.append(img_variant, lbl_name, lbl_price, lbl_variant, rdo_variants, btn_purchase);
+		product_grid.appendChild(frm_card);
+
+		rdo_variants.addEventListener("change", (e) => {
+			const variant_id = parseInt(e.target.value);
+			const variant = product.variants.find(v => v.id === variant_id);
+			img_variant.src = `/${variant.image}`;
+			lbl_price.textContent = `$${variant.price.toFixed(2)}`;
+		});
+
+		btn_purchase.addEventListener("click", () => {
+			const variant_id = parseInt(rdo_variants.value);
+			const quantity = 1
+
+			if (confirm("Add " + quantity + " of product " + variant_id + " to cart?")) {
+				fetch("/cart/add", {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({
+						product_variant_id: variant_id,
+						quantity: quantity
+					})
+				})
+				.then(response => {
+					if (response.ok) { alert("Item added to cart successfully!"); } 
+					else { alert("Error adding item to cart. Please try again."); }
+				})
+				.catch(error => {
+					console.error("Error:", error);
+					alert("An error occurred. Please try again later.");
+				});
+			}
+		});
+	});
+});
+</script>
+{% endblock %}
